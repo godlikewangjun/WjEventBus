@@ -35,7 +35,7 @@ WjEventBus.getInit().subscribe("0",0, String.class, new EventLister() {
 
 ```
  //销毁整个注册
-        WjEventBus.getInit().destory();
+  WjEventBus.getInit().destory();
 ```
 移除某一个
 
@@ -43,4 +43,3 @@ WjEventBus.getInit().subscribe("0",0, String.class, new EventLister() {
  WjEventBus.getInit().remove("1");
  WjEventBus.getInit().remove("2",2);
 ```
-具体详见[WjEventBus demo](https://github.com/godlikewangjun/WjEventBus)
