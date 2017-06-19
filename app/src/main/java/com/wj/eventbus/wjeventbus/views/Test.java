@@ -32,10 +32,8 @@ public class Test extends Activity{
         });
     }
     private void doSend(){
-//        num++;
         WjEventBus.getInit().post("1", "发送了:" + num);
-//        if (num < 1000) {
-//            doSend();
-//        }
+        WjEventBus.getInit().post("2", "发送了:" + num);
+        WjEventBus.getInit().post("3", "发送了:" + num);
     }
 }

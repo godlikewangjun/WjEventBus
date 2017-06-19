@@ -109,12 +109,48 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+        WjEventBus.getInit().subscribe("2", String.class, new EventLister() {
+            @Override
+            public void postResult(final Object eventVaule) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println(eventVaule+"----------接收");
+                    }
+                });
+            }
+        });
+        WjEventBus.getInit().subscribe("2",2, String.class, new EventLister() {
+            @Override
+            public void postResult(final Object eventVaule) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println(eventVaule+"----------优先级2接收");
+                    }
+                });
+            }
+        });
+        WjEventBus.getInit().subscribe("3", String.class, new EventLister() {
+            @Override
+            public void postResult(final Object eventVaule) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println(eventVaule+"----------接收");
+                    }
+                });
+            }
+        });
+
+        WjEventBus.getInit().remove("1");
+        WjEventBus.getInit().remove("2",2);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //取消注册
+        //销毁整个注册
         WjEventBus.getInit().destory();
     }
 }

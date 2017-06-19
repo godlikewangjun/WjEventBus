@@ -11,8 +11,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static android.R.attr.tag;
+
 /**
  * 消息分发
+ *
  * @author Admin
  * @version 1.0
  * @date 2017/6/15
@@ -38,10 +41,10 @@ public class WjEventBus {
     /**
      * 粘性事件的分发暂时缓冲区
      */
-    private ArrayList<PostObject> stickyEventListers=new ArrayList<>();
+    private ArrayList<PostObject> stickyEventListers = new ArrayList<>();
     private int priority = 0;//优先级默认是0
     public long id = 0;//id 递增
-    private int index=-1;//下标
+    private int index = -1;//下标
 
     public static WjEventBus getInit() {
         if (wjEventBus == null) {
@@ -51,6 +54,13 @@ public class WjEventBus {
         return wjEventBus;
     }
 
+    /**
+     * 订阅事件
+     * @param code
+     * @param o 事件类型
+     * @param eventListe
+     * @return
+     */
     public WjEventBus subscribe(String code, Class<?> o, EventLister eventListe) {
         EventKey eventKey = new EventKey(code, priority, id);
         subscribes.put(eventKey, o);
@@ -58,6 +68,13 @@ public class WjEventBus {
         return wjEventBus;
     }
 
+    /**
+     * 订阅粘性事件
+     * @param code
+     * @param o
+     * @param eventListe
+     * @return
+     */
     public WjEventBus subscribeNext(String code, Class<?> o, EventLister eventListe) {
         EventKey eventKey = new EventKey(code, priority, id);
         subscribes.put(eventKey, o);
@@ -74,9 +91,10 @@ public class WjEventBus {
     }
 
     /**
-     * 订阅事件
+     * 订阅事件 带入优先级
+     *
      * @param code
-     * @param priority 优先级
+     * @param priority   优先级
      * @param o
      * @param eventListe
      * @return
@@ -89,9 +107,10 @@ public class WjEventBus {
     }
 
     /**
-     * 粘性事件订阅
+     * 粘性事件订阅 带入优先级
+     *
      * @param code
-     * @param priority 优先级
+     * @param priority   优先级
      * @param o
      * @param eventListe
      * @return
@@ -102,27 +121,28 @@ public class WjEventBus {
         subscribes.put(eventKey, o);
         listener.put(eventKey, eventLister);
         //存入缓存
-        stickyEventListers.add(new PostObject(priority,eventLister));
+        stickyEventListers.add(new PostObject(priority, eventLister));
 
         //排序
         Collections.sort(stickyEventListers, new Comparator<PostObject>() {
             @Override
             public int compare(PostObject o1, PostObject o2) {
-                return o2.priority-o1.priority;
+                return o2.priority - o1.priority;
             }
         });
 
         Iterator iterator = posts.keySet().iterator();
         //处理事件
-        while (stickyEventListers.size()>0 && index>-1){
+        while (stickyEventListers.size() > 0 && index > -1) {
             deStickyEvent(eventKey, iterator, code, o);
-            if(stickyEventListers.size()<1){
-                index=-1;
+            if (stickyEventListers.size() < 1) {
+                index = -1;
                 break;
             }
         }
         return wjEventBus;
     }
+
     /**
      * 推送消息
      * 如果存在优先级就按照最大的推，不存在就全部推送。优先级默认是{@link priority}
@@ -141,6 +161,7 @@ public class WjEventBus {
     /**
      * 处理事件的分发
      * 按照优先级从高到低的传递
+     *
      * @param iterator
      * @param code
      */
@@ -151,9 +172,9 @@ public class WjEventBus {
         while (iterator.hasNext()) {
             EventKey aClass = (EventKey) iterator.next();
             if (aClass.code.equals(code)) {
-                postObject=new PostObject();
-                postObject.priority=aClass.priority;
-                postObject.eventLister=listener.get(aClass);
+                postObject = new PostObject();
+                postObject.priority = aClass.priority;
+                postObject.eventLister = listener.get(aClass);
                 eventListers.add(postObject);
             }
             if (aClass.code.equals(code)) {
@@ -164,10 +185,10 @@ public class WjEventBus {
         Collections.sort(eventListers, new Comparator<PostObject>() {
             @Override
             public int compare(PostObject o1, PostObject o2) {
-                return o2.priority-o1.priority;
+                return o2.priority - o1.priority;
             }
         });
-        for (int i=0;i<eventListers.size();i++){
+        for (int i = 0; i < eventListers.size(); i++) {
             eventListers.get(i).eventLister.postResult(o);
         }
     }
@@ -175,6 +196,7 @@ public class WjEventBus {
     /**
      * 处理粘性事件的分发
      * 只会取得最后一条广播
+     *
      * @param iterator
      * @param code
      */
@@ -194,12 +216,66 @@ public class WjEventBus {
 
     /**
      * 移除某一个事件
-     * @param code
+     *
+     * @param code 标识
      */
-    public void remove(int code) {
-        subscribes.remove(code);
-        posts.remove(code);
-        listener.remove(code);
+    public void remove(String tag) {
+        //移除订阅
+        Iterator iterator = subscribes.keySet().iterator();
+        while (iterator.hasNext()) {
+            EventKey aClass = (EventKey) iterator.next();
+            if (aClass.code.equals(tag)) {
+                subscribes.remove(aClass);
+            }
+        }
+        //移除推送消息
+        iterator = posts.keySet().iterator();
+        while (iterator.hasNext()) {
+            EventKey aClass = (EventKey) iterator.next();
+            if (aClass.code.equals(tag)) {
+                posts.remove(aClass);
+            }
+        }
+        //移除监听消息
+        iterator = listener.keySet().iterator();
+        while (iterator.hasNext()) {
+            EventKey aClass = (EventKey) iterator.next();
+            if (aClass.code.equals(tag)) {
+                listener.remove(aClass);
+            }
+        }
+    }
+
+    /**
+     * 移除某一个事件
+     * @param tag 标识
+     * @param priority 优先级
+     */
+    public void remove(String tag, int priority) {
+        //移除订阅
+        Iterator iterator = subscribes.keySet().iterator();
+        while (iterator.hasNext()) {
+            EventKey aClass = (EventKey) iterator.next();
+            if (aClass.code.equals(tag) && aClass.priority == priority) {
+                subscribes.remove(aClass);
+            }
+        }
+        //移除推送消息
+        iterator = posts.keySet().iterator();
+        while (iterator.hasNext()) {
+            EventKey aClass = (EventKey) iterator.next();
+            if (aClass.code.equals(tag) && aClass.priority == priority) {
+                posts.remove(aClass);
+            }
+        }
+        //移除监听消息
+        iterator = listener.keySet().iterator();
+        while (iterator.hasNext()) {
+            EventKey aClass = (EventKey) iterator.next();
+            if (aClass.code.equals(tag) && aClass.priority == priority) {
+                listener.remove(aClass);
+            }
+        }
     }
 
     /**
