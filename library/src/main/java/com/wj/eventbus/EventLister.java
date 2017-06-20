@@ -1,4 +1,4 @@
-package com.wj.eventbus.wjeventbus;
+package com.wj.eventbus;
 
 /**
  * @author Admin

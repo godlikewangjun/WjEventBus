@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 
+import com.wj.eventbus.WjEventBus;
 import com.wj.eventbus.wjeventbus.R;
-import com.wj.eventbus.wjeventbus.WjEventBus;
 
 
 /**

@@ -3,3 +3,8 @@
 /.idea/
 /.gradle/
 /gradle/
+/local.properties
+app/libs/
+
+libs/
+src/main/res/drawable/

@@ -4,12 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.wj.eventbus.wjeventbus.EventLister;
+import com.wj.eventbus.EventLister;
+import com.wj.eventbus.WjEventBus;
 import com.wj.eventbus.wjeventbus.R;
-import com.wj.eventbus.wjeventbus.WjEventBus;
-
-
-import java.lang.reflect.Method;
 
 
 public class MainActivity extends AppCompatActivity {

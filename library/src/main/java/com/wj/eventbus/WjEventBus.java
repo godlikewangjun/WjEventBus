@@ -1,17 +1,10 @@
-package com.wj.eventbus.wjeventbus;
-
-import android.support.annotation.WorkerThread;
+package com.wj.eventbus;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static android.R.attr.tag;
 
 /**
  * 消息分发
@@ -115,7 +108,6 @@ public class WjEventBus {
      * @param eventListe
      * @return
      */
-    @WorkerThread
     public WjEventBus subscribeNext(String code, int priority, Class<?> o, EventLister eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
         subscribes.put(eventKey, o);
@@ -145,7 +137,7 @@ public class WjEventBus {
 
     /**
      * 推送消息
-     * 如果存在优先级就按照最大的推，不存在就全部推送。优先级默认是{@link priority}
+     * 如果存在优先级就按照最大的推，不存在就全部推送。优先级默认是priority
      *
      * @param code
      * @param o

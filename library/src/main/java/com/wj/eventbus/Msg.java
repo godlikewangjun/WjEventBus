@@ -1,4 +1,4 @@
-package com.wj.eventbus.wjeventbus;
+package com.wj.eventbus;
 
 /**
  * Created by Android on 2016/6/15.
