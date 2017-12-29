@@ -6,6 +6,6 @@ package com.wj.eventbus;
  * @date 2017/6/15
  */
 
-public abstract interface EventLister<T> {
+public interface EventLister<T> {
     public void postResult(T eventVaule);
 }

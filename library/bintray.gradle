@@ -57,7 +57,8 @@ install {
 //获取local.propertes的信息
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
-version = '1.0.0'//版本号 gradlew install gradlew bintrayUpload
+String versionname = '1.0.2'//版本号 gradlew install gradlew bintrayUpload
+version=versionname
 
 bintray {
     user = properties.getProperty("bintray.user")
@@ -75,9 +76,9 @@ bintray {
         publicDownloadNumbers = true
         publish = true
         version {
-            name = version
+            name = versionname
             desc = 'update'
-            vcsTag = version
+            vcsTag = versionname
             attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
         }
     }

@@ -1,5 +1,8 @@
 package com.wj.eventbus;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,10 +57,10 @@ public class WjEventBus {
      * @param eventListe
      * @return
      */
-    public WjEventBus subscribe(String code, Class<?> o, EventLister eventListe) {
+    public WjEventBus subscribe(String code, Class<?> o,EventLister eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
         subscribes.put(eventKey, o);
-        listener.put(eventKey, eventListe);
+        listener.put(eventKey, eventLister);
         return wjEventBus;
     }
 
@@ -68,15 +71,15 @@ public class WjEventBus {
      * @param eventListe
      * @return
      */
-    public WjEventBus subscribeNext(String code, Class<?> o, EventLister eventListe) {
+    public WjEventBus subscribeNext(String code, Class<?> o, EventLister eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
         subscribes.put(eventKey, o);
-        listener.put(eventKey, eventListe);
+        listener.put(eventKey, eventLister);
         Iterator iterator = posts.keySet().iterator();
         while (iterator.hasNext()) {
             EventKey aClass = (EventKey) iterator.next();
             if (aClass.code.equals(code)) {
-                eventListe.postResult(o);
+                eventLister.postResult(o);
                 break;
             }
         }
@@ -92,10 +95,10 @@ public class WjEventBus {
      * @param eventListe
      * @return
      */
-    public WjEventBus subscribe(String code, int priority, Class<?> o, EventLister eventListe) {
+    public WjEventBus subscribe(String code, int priority, Class<?> o, EventLister eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
         subscribes.put(eventKey, o);
-        listener.put(eventKey, eventListe);
+        listener.put(eventKey, eventLister);
         return wjEventBus;
     }
 
