@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "com.wj.eventbus.wjeventbus"
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
     }
@@ -25,5 +25,5 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:27.0.2'
     //    compile 'org.greenrobot:eventbus:3.0.0'
-    compile project(':library')
+    compile project(':wjEventBus')
 }

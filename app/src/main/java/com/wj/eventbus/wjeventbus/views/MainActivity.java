@@ -1,16 +1,12 @@
 package com.wj.eventbus.wjeventbus.views;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ActionMenuView;
 import android.widget.ImageButton;
 
 import com.wj.eventbus.EventLister;
 import com.wj.eventbus.WjEventBus;
-import com.wj.eventbus.wjeventbus.PackerNg;
 import com.wj.eventbus.wjeventbus.R;
 
 
@@ -144,6 +140,18 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+        EventLister eventLister=new EventLister<Integer>(){
+
+            @Override
+            public void postResult(Integer eventVaule) {
+
+            }
+        };
+        try {
+            WjEventBus.getInit().changType(eventLister.getClass());
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
 
         WjEventBus.getInit().remove("1");
         WjEventBus.getInit().remove("2",2);
