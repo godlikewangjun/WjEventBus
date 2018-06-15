@@ -1,8 +1,9 @@
 package com.wj.eventbus;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -116,7 +117,7 @@ public class WjEventBus {
         subscribes.put(eventKey, o);
         listener.put(eventKey, eventLister);
         //存入缓存
-        stickyEventListers.add(new PostObject(priority, eventLister));
+        stickyEventListers.add(new PostObject(priority,o, eventLister));
 
         //排序
         Collections.sort(stickyEventListers, new Comparator<PostObject>() {
@@ -273,6 +274,26 @@ public class WjEventBus {
         }
     }
 
+    public void changType(Class<?> o) throws NoSuchMethodException {
+        //通过反射获取到方法
+        Method declaredMethod =o.getDeclaredMethod("postResult", Object.class);
+        //获取到方法的参数列表
+        Type[] parameterTypes = declaredMethod.getGenericParameterTypes();
+        for (Type type : parameterTypes) {
+            System.out.println(type+" --=======");
+            //只有带泛型的参数才是这种Type，所以得判断一下
+            if(type instanceof ParameterizedType){
+                ParameterizedType parameterizedType = (ParameterizedType) type;
+                //获取参数的类型
+                System.out.println(parameterizedType.getRawType()+" --=======");
+                //获取参数的泛型列表
+                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+                for (Type type2 : actualTypeArguments) {
+                    System.out.println(type2);
+                }
+            }
+        }
+    }
     /**
      * 销毁整个事件的监听
      */

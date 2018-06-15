@@ -12,12 +12,14 @@ public class PostObject {
      */
     public int priority;
     public EventLister eventLister;
+    public Class<?> aClass;
 
     public PostObject() {
     }
 
-    public PostObject(int priority, EventLister eventLister) {
+    public PostObject(int priority,Class<?> aClass, EventLister eventLister) {
         this.priority = priority;
         this.eventLister = eventLister;
+        this.aClass=aClass;
     }
 }

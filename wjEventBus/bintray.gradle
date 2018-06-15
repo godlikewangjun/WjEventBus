@@ -1,0 +1,66 @@
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+
+version '1.0.0'//版本号 gradlew install gradlew bintrayUpload
+group 'com.wj.libs'// com.wj.libs
+
+//上传maven
+
+publishing {
+    publications {
+        Production(MavenPublication) {
+            artifact("$buildDir/outputs/aar/"+project.getName()+"-release.aar")
+            groupId this.group
+            artifactId
+            version this.version
+
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+
+                // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
+                configurations.implementation.allDependencies.each {
+                    // Ensure dependencies such as fileTree are not included in the pom.
+                    if (it.name != 'unspecified') {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                    }
+                }
+            }
+        }
+    }
+}
+// Bintray
+//获取local.propertes的信息
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    publications = ['Production']
+    configurations = ['archives']
+    publish = true
+    override = true
+    pkg {
+        //填入 bintray 上对应的 package 信息
+        repo = 'wjAndBase'
+        name = 'WjEventBus2'
+        vcsUrl = 'https://github.com/godlikewangjun/WjEventBus.git'
+        websiteUrl = 'https://github.com/godlikewangjun/WjEventBus'
+        licenses = ['Apache-2.0']
+        issueTrackerUrl = 'https://github.com/godlikewangjun/WjEventBus/issues'
+        publicDownloadNumbers = true
+        publish = true
+
+        version {
+            name = this.version
+            desc = 'update'
+            vcsTag = this.version
+            released = new Date()
+            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
+        }
+    }
+}
+//gradlew bintrayUpload --info
