@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -26,15 +28,15 @@ public class WjEventBus {
     /**
      * 消息推送的集合
      */
-    private ConcurrentHashMap<EventKey, Object> posts = new ConcurrentHashMap<>();
+    private volatile ConcurrentHashMap<EventKey, Object> posts = new ConcurrentHashMap<>();
     /**
      * 订阅的集合
      */
-    private ConcurrentHashMap<EventKey, Class<?>> subscribes = new ConcurrentHashMap<>();
+    private volatile ConcurrentHashMap<EventKey, Class<?>> subscribes = new ConcurrentHashMap<>();
     /**
      * 事件回调的集合
      */
-    private ConcurrentHashMap<EventKey, EventLister> listener = new ConcurrentHashMap<>();
+    private volatile ConcurrentHashMap<EventKey, EventLister> listener = new ConcurrentHashMap<>();
     /**
      * 粘性事件的分发暂时缓冲区
      */
@@ -42,6 +44,23 @@ public class WjEventBus {
     private int priority = 0;//优先级默认是0
     public long id = 0;//id 递增
     private int index = -1;//下标
+    private int defaultTimes =1000*60;//默认消息的实效性是1分钟
+    private Timer timer;
+
+    public Timer getTimer() {
+        if(timer==null){
+            timer=new Timer();
+        }
+        return timer;
+    }
+
+    public int getDefaultTimes() {
+        return defaultTimes;
+    }
+
+    public void setDefaultTimes(int defaultTimes) {
+        this.defaultTimes = defaultTimes;
+    }
 
     public static WjEventBus getInit() {
         if (wjEventBus == null) {
@@ -147,11 +166,41 @@ public class WjEventBus {
      * @param o
      */
     public synchronized void post(String code, Object o) {
-        EventKey eventKey = new EventKey(code, priority, 0);
+        final EventKey eventKey = new EventKey(code, priority, 0);
         posts.put(eventKey, new Msg(code, o));
         //处理事件
         Iterator iterator = subscribes.keySet().iterator();
         deEvent(eventKey, iterator, code, o);
+
+        getTimer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                posts.remove(eventKey);
+            }
+        },defaultTimes);
+    }
+
+    /**
+     * 推送消息
+     * 如果存在优先级就按照最大的推，不存在就全部推送。优先级默认是priority
+     *
+     * @param code
+     * @param o
+     * @param times 1s 消息的实效性，到时间删除。替换默认的时间
+     */
+    public synchronized void post(String code, Object o,long times) {
+        final EventKey eventKey = new EventKey(code, priority, 0);
+        posts.put(eventKey, new Msg(code, o));
+        //处理事件
+        Iterator iterator = subscribes.keySet().iterator();
+        deEvent(eventKey, iterator, code, o);
+
+        getTimer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                posts.remove(eventKey);
+            }
+        },times*1000);
     }
 
     /**
@@ -215,7 +264,7 @@ public class WjEventBus {
      *
      * @param code 标识
      */
-    public void remove(String tag) {
+    public synchronized void remove(String tag) {
         //移除订阅
         Iterator iterator = subscribes.keySet().iterator();
         while (iterator.hasNext()) {
@@ -274,30 +323,13 @@ public class WjEventBus {
         }
     }
 
-    public void changType(Class<?> o) throws NoSuchMethodException {
-        //通过反射获取到方法
-        Method declaredMethod =o.getDeclaredMethod("postResult", Object.class);
-        //获取到方法的参数列表
-        Type[] parameterTypes = declaredMethod.getGenericParameterTypes();
-        for (Type type : parameterTypes) {
-            System.out.println(type+" --=======");
-            //只有带泛型的参数才是这种Type，所以得判断一下
-            if(type instanceof ParameterizedType){
-                ParameterizedType parameterizedType = (ParameterizedType) type;
-                //获取参数的类型
-                System.out.println(parameterizedType.getRawType()+" --=======");
-                //获取参数的泛型列表
-                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-                for (Type type2 : actualTypeArguments) {
-                    System.out.println(type2);
-                }
-            }
-        }
-    }
     /**
      * 销毁整个事件的监听
      */
     public void destory() {
+        //停止计时器
+        timer.cancel();
+        timer=null;
         subscribes.clear();
         posts.clear();
         listener.clear();
