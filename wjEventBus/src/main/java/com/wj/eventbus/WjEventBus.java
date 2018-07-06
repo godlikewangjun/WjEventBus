@@ -42,12 +42,12 @@ public class WjEventBus {
      */
     private ArrayList<PostObject> stickyEventListers = new ArrayList<>();
     private int priority = 0;//优先级默认是0
-    public long id = 0;//id 递增
+    private long id = 0;//id 递增
     private int index = -1;//下标
     private int defaultTimes =1000*60;//默认消息的实效性是1分钟
     private Timer timer;
 
-    public Timer getTimer() {
+    private Timer getTimer() {
         if(timer==null){
             timer=new Timer();
         }
@@ -115,7 +115,7 @@ public class WjEventBus {
      * @param eventListe
      * @return
      */
-    public WjEventBus subscribe(String code, int priority, Class<?> o, EventLister eventLister) {
+    public  WjEventBus subscribe(String code,Class<?> o, int priority, EventLister eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
         subscribes.put(eventKey, o);
         listener.put(eventKey, eventLister);
@@ -273,14 +273,6 @@ public class WjEventBus {
                 subscribes.remove(aClass);
             }
         }
-        //移除推送消息
-        iterator = posts.keySet().iterator();
-        while (iterator.hasNext()) {
-            EventKey aClass = (EventKey) iterator.next();
-            if (aClass.code.equals(tag)) {
-                posts.remove(aClass);
-            }
-        }
         //移除监听消息
         iterator = listener.keySet().iterator();
         while (iterator.hasNext()) {
@@ -305,14 +297,6 @@ public class WjEventBus {
                 subscribes.remove(aClass);
             }
         }
-        //移除推送消息
-        iterator = posts.keySet().iterator();
-        while (iterator.hasNext()) {
-            EventKey aClass = (EventKey) iterator.next();
-            if (aClass.code.equals(tag) && aClass.priority == priority) {
-                posts.remove(aClass);
-            }
-        }
         //移除监听消息
         iterator = listener.keySet().iterator();
         while (iterator.hasNext()) {
@@ -322,6 +306,38 @@ public class WjEventBus {
             }
         }
     }
+
+    /**
+     * 移除消息
+     * @param tag 标识
+     */
+    public synchronized void removeMsg(String tag) {
+        //移除推送消息
+        Iterator iterator = posts.keySet().iterator();
+        while (iterator.hasNext()) {
+            EventKey aClass = (EventKey) iterator.next();
+            if (aClass.code.equals(tag)) {
+                posts.remove(aClass);
+            }
+        }
+    }
+
+    /**
+     * 移除消息
+     * @param tag 标识
+     * @param priority 优先级
+     */
+    public synchronized void removeMsg(String tag,int priority) {
+        //移除推送消息
+        Iterator iterator = posts.keySet().iterator();
+        while (iterator.hasNext()) {
+            EventKey aClass = (EventKey) iterator.next();
+            if (aClass.code.equals(tag) && aClass.priority == priority) {
+                posts.remove(aClass);
+            }
+        }
+    }
+
 
     /**
      * 销毁整个事件的监听
