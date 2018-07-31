@@ -344,8 +344,10 @@ public class WjEventBus {
      */
     public void destory() {
         //停止计时器
-        timer.cancel();
-        timer=null;
+        if(timer!=null){
+            timer.cancel();
+            timer=null;
+        }
         subscribes.clear();
         posts.clear();
         listener.clear();
