@@ -1,5 +1,7 @@
 package com.wj.eventbus;
 
+import android.os.Parcelable;
+
 /**
  * @author Admin
  * @version 1.0
@@ -7,5 +9,5 @@ package com.wj.eventbus;
  */
 
 public interface EventLister<T> {
-    public void postResult(T eventVaule);
+    public void postResult(T eventValue);
 }

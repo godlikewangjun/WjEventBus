@@ -1,17 +1,18 @@
 package com.wj.eventbus.wjeventbus.views;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageButton;
+import android.view.View;
+import android.widget.Toast;
 
 import com.wj.eventbus.EventLister;
 import com.wj.eventbus.WjEventBus;
+import com.wj.eventbus.aidl.AidlServerTools;
+import com.wj.eventbus.mylibrary.IEventListener;
+import com.wj.eventbus.mylibrary.IEventMsgType;
 import com.wj.eventbus.wjeventbus.R;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -28,19 +29,19 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("优先级是0-----------");
             }
         });
-        WjEventBus.getInit().subscribe("0", String.class,2, new EventLister() {
+        WjEventBus.getInit().subscribe("0", String.class, 2, new EventLister() {
             @Override
             public void postResult(Object eventVaule) {
                 System.out.println("优先级是2-----------");
             }
         });
-        WjEventBus.getInit().subscribe("0",  String.class,1, new EventLister() {
+        WjEventBus.getInit().subscribe("0", String.class, 1, new EventLister() {
             @Override
             public void postResult(Object eventVaule) {
                 System.out.println("优先级是1-----------");
             }
         });
-        WjEventBus.getInit().subscribe("0",  String.class,0, new EventLister() {
+        WjEventBus.getInit().subscribe("0", String.class, 0, new EventLister() {
             @Override
             public void postResult(Object eventVaule) {
                 System.out.println("优先级是0-----------");
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println(eventVaule + "----------接收");
             }
         });
-        WjEventBus.getInit().subscribe("2",  String.class,2, new EventLister() {
+        WjEventBus.getInit().subscribe("2", String.class, 2, new EventLister() {
             @Override
             public void postResult(final Object eventVaule) {
                 System.out.println(eventVaule + "----------优先级2接收");
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println(eventVaule + "----------接收");
             }
         });
-        WjEventBus.getInit().subscribe("3", new EventLister<String>() {
+        WjEventBus.getInit().subscribe("3", String.class, new EventLister<String>() {
             @Override
             public void postResult(final String eventVaule) {
                 System.out.println(eventVaule + "------sdsdsdsd----接收");
@@ -111,7 +112,39 @@ public class MainActivity extends AppCompatActivity {
         WjEventBus.getInit().remove("1");
         WjEventBus.getInit().remove("2", 2);
 
+        WjEventBus.getInit().subscribe("ce", String.class, new EventLister<String>() {
+            @Override
+            public void postResult(final String eventVaule) {
+                System.out.println("=======进程发来的 11111111");
+            }
+        });
+
+
+        findViewById(R.id.open).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AidlServerTools.getInit().bindService(MainActivity.this);
+                if (AidlServerTools.getInit().iEventAidlInterface != null) {
+                    IEventMsgType iEventMsgType = new IEventMsgType();
+                    iEventMsgType.setO(String.class);
+                    try {
+                        AidlServerTools.getInit().iEventAidlInterface.subscribe("ce", iEventMsgType);
+                        AidlServerTools.getInit().iEventAidlInterface.registerCallBack(new IEventListener.Stub() {
+                            @Override
+                            public void postResult(String eventVaule) throws RemoteException {
+                                System.out.println("=======进程发来的 22222211111");
+                            }
+                        });
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    startActivity(new Intent(MainActivity.this, TestActivity.class));
+                }
+            }
+        });
+
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
