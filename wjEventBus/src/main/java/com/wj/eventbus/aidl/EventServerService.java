@@ -24,10 +24,10 @@ public class EventServerService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        int check = checkCallingOrSelfPermission("com.wjevent.permission.ACCESS_SERVICE");
-        if (check == PackageManager.PERMISSION_DENIED) {
-            return null;
-        }
+//        int check = checkCallingOrSelfPermission(getPackageName()+".permission.ACCESS_SERVICE");
+//        if (check == PackageManager.PERMISSION_DENIED) {
+//            return null;
+//        }
         return aidlEventBus;
     }
 }

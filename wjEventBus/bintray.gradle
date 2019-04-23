@@ -2,7 +2,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 
-version '1.1.0'//版本号 gradlew install gradlew bintrayUpload
+version '1.1.1'//版本号 gradlew install gradlew bintrayUpload
 group 'com.wj.libs'// com.wj.libs
 
 //上传maven
