@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
 import com.wj.eventbus.EventLister;
 import com.wj.eventbus.WjEventBus;
@@ -119,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         findViewById(R.id.open).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -149,6 +147,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         //销毁整个注册
-        WjEventBus.getInit().destory();
+        WjEventBus.getInit().destroy();
     }
 }

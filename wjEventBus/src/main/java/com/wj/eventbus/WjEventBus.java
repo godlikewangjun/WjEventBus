@@ -342,7 +342,7 @@ public class WjEventBus {
     /**
      * 销毁整个事件的监听
      */
-    public void destory() {
+    public void destroy() {
         //停止计时器
         if(timer!=null){
             timer.cancel();
