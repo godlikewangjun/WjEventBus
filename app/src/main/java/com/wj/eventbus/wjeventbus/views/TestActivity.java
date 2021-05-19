@@ -2,22 +2,16 @@ package com.wj.eventbus.wjeventbus.views;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.IInterface;
-import android.os.Parcel;
 import android.os.RemoteException;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.view.View;
 
-import com.wj.eventbus.WjEventBus;
 import com.wj.eventbus.aidl.AidlClientTools;
 import com.wj.eventbus.aidl.AidlServerTools;
 import com.wj.eventbus.mylibrary.IEventAidlInterface;
 import com.wj.eventbus.mylibrary.IEventMsgType;
 import com.wj.eventbus.wjeventbus.R;
-
-import java.io.FileDescriptor;
 
 
 /**

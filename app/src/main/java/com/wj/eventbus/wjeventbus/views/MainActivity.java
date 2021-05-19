@@ -3,7 +3,7 @@ package com.wj.eventbus.wjeventbus.views;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 
 import com.wj.eventbus.EventLister;
