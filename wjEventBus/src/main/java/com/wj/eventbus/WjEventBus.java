@@ -84,7 +84,6 @@ public class WjEventBus {
      * 订阅粘性事件
      * @param code
      * @param o
-     * @param eventListe
      * @return
      */
     public WjEventBus subscribeNext(String code, Class<?> o, EventLister eventLister) {
