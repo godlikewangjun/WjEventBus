@@ -80,14 +80,14 @@ public class WjEventBus {
         return wjEventBus;
     }
 
-
     /**
      * 订阅粘性事件
      * @param code
      * @param o
+     * @param eventListe
      * @return
      */
-    public <E> WjEventBus subscribeNext(String code, Class<?> o, EventLister<E> eventLister) {
+    public WjEventBus subscribeNext(String code, Class<?> o, EventLister eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
         subscribes.put(eventKey, o);
         listener.put(eventKey, eventLister);
