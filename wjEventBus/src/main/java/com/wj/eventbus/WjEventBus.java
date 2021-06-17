@@ -1,9 +1,6 @@
 package com.wj.eventbus;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,19 +25,19 @@ public class WjEventBus {
     /**
      * 消息推送的集合
      */
-    private volatile ConcurrentHashMap<EventKey, Object> posts = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<EventKey, Object> posts = new ConcurrentHashMap<>();
     /**
      * 订阅的集合
      */
-    private volatile ConcurrentHashMap<EventKey, Class<?>> subscribes = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<EventKey, Class<?>> subscribes = new ConcurrentHashMap<>();
     /**
      * 事件回调的集合
      */
-    private volatile ConcurrentHashMap<EventKey, EventLister> listener = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<EventKey, EventLister<?>> listener = new ConcurrentHashMap<>();
     /**
      * 粘性事件的分发暂时缓冲区
      */
-    private ArrayList<PostObject> stickyEventListers = new ArrayList<>();
+    private final ArrayList<PostObject> stickyEventListeners = new ArrayList<>();
     private int priority = 0;//优先级默认是0
     private long id = 0;//id 递增
     private int index = -1;//下标
@@ -74,24 +71,23 @@ public class WjEventBus {
      * 订阅事件
      * @param code
      * @param o 事件类型
-     * @param eventListe
      * @return
      */
-    public WjEventBus subscribe(String code, Class<?> o,EventLister eventLister) {
+    public <E> WjEventBus subscribe(String code, Class<?> o,EventLister<E> eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
         subscribes.put(eventKey, o);
         listener.put(eventKey, eventLister);
         return wjEventBus;
     }
 
+
     /**
      * 订阅粘性事件
      * @param code
      * @param o
-     * @param eventListe
      * @return
      */
-    public WjEventBus subscribeNext(String code, Class<?> o, EventLister eventLister) {
+    public <E> WjEventBus subscribeNext(String code, Class<?> o, EventLister<E> eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
         subscribes.put(eventKey, o);
         listener.put(eventKey, eventLister);
@@ -112,15 +108,15 @@ public class WjEventBus {
      * @param code
      * @param priority   优先级
      * @param o
-     * @param eventListe
      * @return
      */
-    public  WjEventBus subscribe(String code,Class<?> o, int priority, EventLister eventLister) {
+    public <E> WjEventBus subscribe(String code,Class<?> o, int priority, EventLister<E> eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
         subscribes.put(eventKey, o);
         listener.put(eventKey, eventLister);
         return wjEventBus;
     }
+
 
     /**
      * 粘性事件订阅 带入优先级
@@ -128,18 +124,17 @@ public class WjEventBus {
      * @param code
      * @param priority   优先级
      * @param o
-     * @param eventListe
      * @return
      */
-    public WjEventBus subscribeNext(String code, int priority, Class<?> o, EventLister eventLister) {
+    public <E> WjEventBus subscribeNext(String code, int priority, Class<?> o, EventLister<E> eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
         subscribes.put(eventKey, o);
         listener.put(eventKey, eventLister);
         //存入缓存
-        stickyEventListers.add(new PostObject(priority,o, eventLister));
+        stickyEventListeners.add(new PostObject(priority,o, eventLister));
 
         //排序
-        Collections.sort(stickyEventListers, new Comparator<PostObject>() {
+        Collections.sort(stickyEventListeners, new Comparator<PostObject>() {
             @Override
             public int compare(PostObject o1, PostObject o2) {
                 return o2.priority - o1.priority;
@@ -148,9 +143,9 @@ public class WjEventBus {
 
         Iterator iterator = posts.keySet().iterator();
         //处理事件
-        while (stickyEventListers.size() > 0 && index > -1) {
+        while (stickyEventListeners.size() > 0 && index > -1) {
             deStickyEvent(eventKey, iterator, code, o);
-            if (stickyEventListers.size() < 1) {
+            if (stickyEventListeners.size() < 1) {
                 index = -1;
                 break;
             }
@@ -216,7 +211,7 @@ public class WjEventBus {
         PostObject postObject;
         while (iterator.hasNext()) {
             EventKey aClass = (EventKey) iterator.next();
-            if (aClass.code.equals(code)) {
+            if (aClass.code.equals(code) && subscribes.get(aClass).equals(o.getClass())) {
                 postObject = new PostObject();
                 postObject.priority = aClass.priority;
                 postObject.eventLister = listener.get(aClass);

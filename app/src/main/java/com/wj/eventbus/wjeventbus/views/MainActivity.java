@@ -22,10 +22,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         WjEventBus.getInit().post("0", "425");
-        WjEventBus.getInit().subscribe("0", String.class, new EventLister() {
+        WjEventBus.getInit().<String>subscribe("0",String.class, new EventLister<String>() {
             @Override
-            public void postResult(Object eventVaule) {
-                System.out.println("优先级是0-----------");
+            public void postResult(String eventValue) {
+                System.out.println("优先级是0-----------踩踩踩踩踩踩");
             }
         });
         WjEventBus.getInit().subscribe("0", String.class, 2, new EventLister() {

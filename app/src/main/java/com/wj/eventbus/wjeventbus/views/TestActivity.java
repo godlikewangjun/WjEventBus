@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.view.View;
 
+import com.wj.eventbus.WjEventBus;
 import com.wj.eventbus.aidl.AidlClientTools;
 import com.wj.eventbus.aidl.AidlServerTools;
 import com.wj.eventbus.mylibrary.IEventAidlInterface;
@@ -50,5 +51,13 @@ public class TestActivity extends Activity{
 //        WjEventBus.getInit().post("1", "发送了:" + num);
 //        WjEventBus.getInit().post("2", "发送了:" + num);
 //        WjEventBus.getInit().post("3", "发送了:" + num);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AidlServerTools.getInit().iEventAidlInterface.unregisterCallBack();
+        WjEventBus.getInit().remove("ce");
+        WjEventBus.getInit().removeMsg("ce");
     }
 }
