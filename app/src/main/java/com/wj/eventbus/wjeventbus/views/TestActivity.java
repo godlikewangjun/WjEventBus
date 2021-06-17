@@ -56,7 +56,6 @@ public class TestActivity extends Activity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        AidlServerTools.getInit().iEventAidlInterface.unregisterCallBack();
         WjEventBus.getInit().remove("ce");
         WjEventBus.getInit().removeMsg("ce");
     }
