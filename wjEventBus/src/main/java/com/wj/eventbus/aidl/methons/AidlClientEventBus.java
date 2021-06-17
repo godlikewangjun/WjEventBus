@@ -20,7 +20,7 @@ public class AidlClientEventBus extends IEventAidlInterface.Stub {
     public void subscribe(String code, final IEventMsgType data) throws RemoteException {
         WjEventBus.getInit().remove(code);
         WjEventBus.getInit().removeMsg(code);
-        WjEventBus.getInit().subscribe(code, data.getO(), new EventLister<String>() {
+        WjEventBus.getInit().subscribe(code, new EventLister<String>() {
             @Override
             public void postResult(String eventValue) {
                 synchronized (mListenerList) {

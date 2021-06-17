@@ -22,41 +22,41 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         WjEventBus.getInit().post("0", "425");
-        WjEventBus.getInit().<String>subscribe("0",String.class, new EventLister<String>() {
+        WjEventBus.getInit().<String>subscribe("0", new EventLister<String>() {
             @Override
             public void postResult(String eventValue) {
                 System.out.println("优先级是0-----------踩踩踩踩踩踩");
             }
         });
-        WjEventBus.getInit().subscribe("0", String.class, 2, new EventLister() {
+        WjEventBus.getInit().subscribe("0", 2, new EventLister() {
             @Override
             public void postResult(Object eventVaule) {
                 System.out.println("优先级是2-----------");
             }
         });
-        WjEventBus.getInit().subscribe("0", String.class, 1, new EventLister() {
+        WjEventBus.getInit().subscribe("0", 1, new EventLister() {
             @Override
             public void postResult(Object eventVaule) {
                 System.out.println("优先级是1-----------");
             }
         });
-        WjEventBus.getInit().subscribe("0", String.class, 0, new EventLister() {
+        WjEventBus.getInit().subscribe("0",  0, new EventLister() {
             @Override
             public void postResult(Object eventVaule) {
                 System.out.println("优先级是0-----------");
             }
         });
-        WjEventBus.getInit().subscribeNext("0", 4, String.class, new EventLister() {
+        WjEventBus.getInit().subscribeNext("0", 4,  new EventLister() {
             @Override
             public void postResult(final Object eventVaule) {
                 System.out.println("--------4粘性动画" + eventVaule);
             }
         });
-        WjEventBus.getInit().subscribeNext("0", 5, String.class, new EventLister() {
+        WjEventBus.getInit().subscribeNext("0", 5,  new EventLister() {
             @Override
             public void postResult(final Object eventVaule) {
                 System.out.println("--------5粘性动画" + eventVaule);
-                WjEventBus.getInit().subscribeNext("0", 4, String.class, new EventLister() {
+                WjEventBus.getInit().subscribeNext("0", 4, new EventLister() {
                     @Override
                     public void postResult(final Object eventVaule) {
                         System.out.println("--------4粘性动画" + eventVaule);
@@ -64,13 +64,13 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-        WjEventBus.getInit().subscribeNext("0", 3, String.class, new EventLister() {
+        WjEventBus.getInit().subscribeNext("0", 3,  new EventLister() {
             @Override
             public void postResult(final Object eventVaule) {
                 System.out.println("--------3粘性动画" + eventVaule);
             }
         });
-        WjEventBus.getInit().subscribeNext("0", 4, String.class, new EventLister() {
+        WjEventBus.getInit().subscribeNext("0", 4,  new EventLister() {
             @Override
             public void postResult(final Object eventVaule) {
                 System.out.println("--------4粘性动画" + eventVaule);
@@ -78,31 +78,31 @@ public class MainActivity extends AppCompatActivity {
         });
         WjEventBus.getInit().post("0", "425");
 
-        WjEventBus.getInit().subscribe("1", String.class, new EventLister() {
+        WjEventBus.getInit().subscribe("1",new EventLister() {
             @Override
             public void postResult(final Object eventVaule) {
                 System.out.println(eventVaule + "----------接收");
             }
         });
-        WjEventBus.getInit().subscribe("2", String.class, new EventLister() {
+        WjEventBus.getInit().subscribe("2",  new EventLister() {
             @Override
             public void postResult(final Object eventVaule) {
                 System.out.println(eventVaule + "----------接收");
             }
         });
-        WjEventBus.getInit().subscribe("2", String.class, 2, new EventLister() {
+        WjEventBus.getInit().subscribe("2",2, new EventLister() {
             @Override
             public void postResult(final Object eventVaule) {
                 System.out.println(eventVaule + "----------优先级2接收");
             }
         });
-        WjEventBus.getInit().subscribe("3", String.class, new EventLister() {
+        WjEventBus.getInit().subscribe("3", new EventLister() {
             @Override
             public void postResult(final Object eventVaule) {
                 System.out.println(eventVaule + "----------接收");
             }
         });
-        WjEventBus.getInit().subscribe("3", String.class, new EventLister<String>() {
+        WjEventBus.getInit().subscribe("3", new EventLister<String>() {
             @Override
             public void postResult(final String eventVaule) {
                 System.out.println(eventVaule + "------sdsdsdsd----接收");
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         WjEventBus.getInit().remove("1");
         WjEventBus.getInit().remove("2", 2);
 
-        WjEventBus.getInit().subscribe("ce", String.class, new EventLister<String>() {
+        WjEventBus.getInit().subscribe("ce",  new EventLister<String>() {
             @Override
             public void postResult(final String eventVaule) {
                 System.out.println("=======进程发来的 11111111");

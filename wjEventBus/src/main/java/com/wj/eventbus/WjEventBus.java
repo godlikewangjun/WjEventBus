@@ -29,7 +29,7 @@ public class WjEventBus {
     /**
      * 订阅的集合
      */
-    private final ConcurrentHashMap<EventKey, Class<?>> subscribes = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<EventKey, String> subscribes = new ConcurrentHashMap<>();
     /**
      * 事件回调的集合
      */
@@ -73,9 +73,9 @@ public class WjEventBus {
      * @param o 事件类型
      * @return
      */
-    public <E> WjEventBus subscribe(String code, Class<?> o,EventLister<E> eventLister) {
+    public <E> WjEventBus subscribe(String code,EventLister<E> eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
-        subscribes.put(eventKey, o);
+        subscribes.put(eventKey, code);
         listener.put(eventKey, eventLister);
         return wjEventBus;
     }
@@ -86,15 +86,15 @@ public class WjEventBus {
      * @param o
      * @return
      */
-    public WjEventBus subscribeNext(String code, Class<?> o, EventLister eventLister) {
+    public WjEventBus subscribeNext(String code, EventLister eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
-        subscribes.put(eventKey, o);
+        subscribes.put(eventKey, code);
         listener.put(eventKey, eventLister);
         Iterator iterator = posts.keySet().iterator();
         while (iterator.hasNext()) {
             EventKey aClass = (EventKey) iterator.next();
             if (aClass.code.equals(code)) {
-                eventLister.postResult(o);
+                eventLister.postResult(posts.get(aClass));
                 break;
             }
         }
@@ -109,9 +109,9 @@ public class WjEventBus {
      * @param o
      * @return
      */
-    public <E> WjEventBus subscribe(String code,Class<?> o, int priority, EventLister<E> eventLister) {
+    public <E> WjEventBus subscribe(String code, int priority, EventLister<E> eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
-        subscribes.put(eventKey, o);
+        subscribes.put(eventKey, code);
         listener.put(eventKey, eventLister);
         return wjEventBus;
     }
@@ -125,12 +125,12 @@ public class WjEventBus {
      * @param o
      * @return
      */
-    public <E> WjEventBus subscribeNext(String code, int priority, Class<?> o, EventLister<E> eventLister) {
+    public <E> WjEventBus subscribeNext(String code, int priority, EventLister<E> eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
-        subscribes.put(eventKey, o);
+        subscribes.put(eventKey, code);
         listener.put(eventKey, eventLister);
         //存入缓存
-        stickyEventListeners.add(new PostObject(priority,o, eventLister));
+        stickyEventListeners.add(new PostObject(priority, eventLister));
 
         //排序
         Collections.sort(stickyEventListeners, new Comparator<PostObject>() {
@@ -143,7 +143,7 @@ public class WjEventBus {
         Iterator iterator = posts.keySet().iterator();
         //处理事件
         while (stickyEventListeners.size() > 0 && index > -1) {
-            deStickyEvent(eventKey, iterator, code, o);
+            deStickyEvent(eventKey, iterator, code);
             if (stickyEventListeners.size() < 1) {
                 index = -1;
                 break;
@@ -210,7 +210,7 @@ public class WjEventBus {
         PostObject postObject;
         while (iterator.hasNext()) {
             EventKey aClass = (EventKey) iterator.next();
-            if (aClass.code.equals(code) && subscribes.get(aClass).equals(o.getClass())) {
+            if (aClass.code.equals(code)) {
                 postObject = new PostObject();
                 postObject.priority = aClass.priority;
                 postObject.eventLister = listener.get(aClass);
@@ -239,17 +239,15 @@ public class WjEventBus {
      * @param iterator
      * @param code
      */
-    private void deStickyEvent(EventKey eventKey, Iterator iterator, String code, Object o) {
+    private void deStickyEvent(EventKey eventKey, Iterator iterator, String code) {
         EventLister eventLister = null;//待发事件的集合
         while (iterator.hasNext()) {
             EventKey aClass = (EventKey) iterator.next();
             if (aClass.code.equals(code)) {
                 eventLister = listener.get(aClass);
+                eventLister.postResult(posts.get(aClass));
                 break;
             }
-        }
-        if (eventLister != null) {
-            eventLister.postResult(o);
         }
     }
 
