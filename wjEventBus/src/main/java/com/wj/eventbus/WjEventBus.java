@@ -93,7 +93,7 @@ public class WjEventBus {
         while (iterator.hasNext()) {
             EventKey aClass = (EventKey) iterator.next();
             if (aClass.code.equals(code)) {
-                eventLister.postResult((E) posts.get(aClass));
+                eventLister.postResult((E) ((Msg)posts.get(aClass)).object);
                 break;
             }
         }
