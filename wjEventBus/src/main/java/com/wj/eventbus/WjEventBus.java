@@ -1,6 +1,5 @@
 package com.wj.eventbus;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -90,7 +89,7 @@ public class WjEventBus {
         EventKey eventKey = new EventKey(code, priority, id);
         subscribes.put(eventKey, code);
         listener.put(eventKey, eventLister);
-        Iterator iterator = posts.keySet().iterator();
+        Iterator<EventKey> iterator = posts.keySet().iterator();
         while (iterator.hasNext()) {
             EventKey aClass = (EventKey) iterator.next();
             if (aClass.code.equals(code)) {
@@ -140,7 +139,7 @@ public class WjEventBus {
             }
         });
 
-        Iterator iterator = posts.keySet().iterator();
+        Iterator<EventKey> iterator = posts.keySet().iterator();
         //处理事件
         while (stickyEventListeners.size() > 0 && index > -1) {
             deStickyEvent(eventKey, iterator, code);
@@ -163,7 +162,7 @@ public class WjEventBus {
         final EventKey eventKey = new EventKey(code, priority, 0);
         posts.put(eventKey, new Msg(code, o));
         //处理事件
-        Iterator iterator = subscribes.keySet().iterator();
+        Iterator<EventKey> iterator = subscribes.keySet().iterator();
         deEvent(eventKey, iterator, code, o);
 
         getTimer().schedule(new TimerTask() {
@@ -186,7 +185,7 @@ public class WjEventBus {
         final EventKey eventKey = new EventKey(code, priority, 0);
         posts.put(eventKey, new Msg(code, o));
         //处理事件
-        Iterator iterator = subscribes.keySet().iterator();
+        Iterator<EventKey> iterator = subscribes.keySet().iterator();
         deEvent(eventKey, iterator, code, o);
 
         getTimer().schedule(new TimerTask() {
@@ -245,7 +244,7 @@ public class WjEventBus {
             EventKey aClass = (EventKey) iterator.next();
             if (aClass.code.equals(code)) {
                 eventLister = listener.get(aClass);
-                eventLister.postResult(posts.get(aClass));
+                eventLister.postResult(((Msg)posts.get(aClass)).object);
                 break;
             }
         }
@@ -258,7 +257,7 @@ public class WjEventBus {
      */
     public synchronized void remove(String tag) {
         //移除订阅
-        Iterator iterator = subscribes.keySet().iterator();
+        Iterator<EventKey> iterator = subscribes.keySet().iterator();
         while (iterator.hasNext()) {
             EventKey aClass = (EventKey) iterator.next();
             if (aClass.code.equals(tag)) {
@@ -282,7 +281,7 @@ public class WjEventBus {
      */
     public void remove(String tag, int priority) {
         //移除订阅
-        Iterator iterator = subscribes.keySet().iterator();
+        Iterator<EventKey> iterator = subscribes.keySet().iterator();
         while (iterator.hasNext()) {
             EventKey aClass = (EventKey) iterator.next();
             if (aClass.code.equals(tag) && aClass.priority == priority) {
@@ -305,7 +304,7 @@ public class WjEventBus {
      */
     public synchronized void removeMsg(String tag) {
         //移除推送消息
-        Iterator iterator = posts.keySet().iterator();
+        Iterator<EventKey> iterator = posts.keySet().iterator();
         while (iterator.hasNext()) {
             EventKey aClass = (EventKey) iterator.next();
             if (aClass.code.equals(tag)) {
@@ -321,7 +320,7 @@ public class WjEventBus {
      */
     public synchronized void removeMsg(String tag,int priority) {
         //移除推送消息
-        Iterator iterator = posts.keySet().iterator();
+        Iterator<EventKey> iterator = posts.keySet().iterator();
         while (iterator.hasNext()) {
             EventKey aClass = (EventKey) iterator.next();
             if (aClass.code.equals(tag) && aClass.priority == priority) {
