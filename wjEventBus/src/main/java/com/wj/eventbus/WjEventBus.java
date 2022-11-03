@@ -86,7 +86,7 @@ public class WjEventBus {
      * @param o
      * @return
      */
-    public WjEventBus subscribeNext(String code, EventLister eventLister) {
+    public <E> WjEventBus subscribeNext(String code, EventLister<E> eventLister) {
         EventKey eventKey = new EventKey(code, priority, id);
         subscribes.put(eventKey, code);
         listener.put(eventKey, eventLister);
@@ -94,7 +94,7 @@ public class WjEventBus {
         while (iterator.hasNext()) {
             EventKey aClass = (EventKey) iterator.next();
             if (aClass.code.equals(code)) {
-                eventLister.postResult(posts.get(aClass));
+                eventLister.postResult((E) posts.get(aClass));
                 break;
             }
         }
